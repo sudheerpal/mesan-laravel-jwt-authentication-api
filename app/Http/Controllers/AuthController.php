@@ -23,10 +23,11 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $rules = [
-            'email' => 'required|email|max:255|unique:users',
+            'username' => 'unique:users',
+            'email' => 'unique:users',
         ];
 
-        $input = $request->only('email');
+        $input = $request->only('username', 'email');
 
         $validator = Validator::make($input, $rules);
 
@@ -34,9 +35,10 @@ class AuthController extends Controller
             return response()->json(['success'=> false, 'error'=> $validator->messages()]);
         }
 
+        $username = $request->username;
         $email = $request->email;
         $password = $request->password;
-        $user = User::create(['email' => $email, 'password' => Hash::make($password)]);
+        $user = User::create(['username' => $username, 'email' => $email, 'password' => Hash::make($password)]);
 
         return $this->login($request);
     }
